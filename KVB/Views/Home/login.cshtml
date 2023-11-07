@@ -1,0 +1,50 @@
+﻿@model login
+@{
+    ViewBag.Title = "Log In";
+}
+
+@{
+    Layout = "cssprop";
+
+}
+
+<body>
+<div class="container-fluid">
+    <div class="row main-content bg-success text-center">
+        <div class="col-md-4 text-center company__info">
+            <img id="sdf" style="border-radius:25%"src="~/lib/bootstrap/image/kaizen.png" />
+        </div>
+        <div class="col-md-8 col-xs-12 col-sm-12 login_form">
+            <div class="container-fluid">
+                <div class="row">
+                    <h2>Log In</h2>
+                </div>
+                <div class="row">
+                    @using (Html.BeginForm("login", "HOME", FormMethod.Post))
+                    {
+                        <div class="row">
+                            @Html.TextBoxFor(model => model.name, new { @class = "form__input", placeholder = "Username" })
+                            @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
+                             @*  <input  @Validation.For("credits")/> *@
+                        </div>
+                        <div class="row">
+                        @Html.PasswordFor(model => model.password, new { @class = "form__input", placeholder = "Password" })
+                        @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
+                         @Html.ValidationSummary(true,"",new { @class = "text-danger" })
+                        </div>
+                        <div class="">
+                            <input type="submit" value="Submit" class="btn">
+                            <a class="btn" href="@Url.Action("Register", "home")">Sign Up</a>
+                        </div>
+                    }
+                  </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.2.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.js">
+</script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>

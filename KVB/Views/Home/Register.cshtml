@@ -1,0 +1,57 @@
+﻿@model credentials
+@{
+    Layout = "cssprop";
+
+}
+
+
+
+<div class="container " >
+    <div class="row  justify-content-center  mt-4  ">
+        <div class="col-md-2 text-center company__info">
+             <img id="sdf" style="border-radius:25%" src="~/lib/bootstrap/image/kaizen.png" />
+             </div>
+        <div class="col-md-5 text-center company__info" style="padding:0px; border:0px;">
+            <div class="card  ">
+                    <div class="card-body ">
+                   <div class="row">
+                        <h2 class="card-title text-center">Register</h2></div>
+                        @using (Html.BeginForm("Register", "Home", FormMethod.Post, new { @class = "form" }))
+                        {
+                            <div class="row">
+                              &nbsp;
+                            @Html.TextBoxFor(cr => cr.name, new { @class = "form-control", placeholder = "Name" })
+                            @Html.ValidationMessageFor(cr => cr.name, "", new { @class = "text-danger" })
+                        </div>
+                   
+                        <div class="row">
+                            &nbsp;
+                            @Html.TextBoxFor(cr => cr.emailid, new { @class = "form-control", placeholder = "Email" })
+                            @Html.ValidationMessageFor(cr => cr.emailid, "", new { @class = "text-danger" })
+                        </div>
+
+                            <div class="row">
+                            &nbsp;
+                            @Html.PasswordFor(cr => cr.password, new { @class = "form-control", placeholder = "Password" })
+                            @Html.ValidationMessageFor(cr => cr.password, "", new { @class = "text-danger" })
+                        </div>
+                            <div class="row">
+                            &nbsp;
+                            @Html.PasswordFor(cr => cr.Confirm_password, new { @class = "form-control", placeholder = "Confirm Password" })
+                            @Html.ValidationMessageFor(cr => cr .Confirm_password, "", new { @class = "text-danger" })
+                        </div>
+                            <div class="row">
+                            &nbsp;
+                            @Html.TextBoxFor(cr => cr.phone, new { @class = "form-control", placeholder = "Phone" })
+                            @Html.ValidationMessageFor(cr => cr.phone, "", new { @class = "text-danger" })
+                            @Html.ValidationSummary(true,"",new { @class = "text-danger" })
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        <a class="btn" href="@Url.Action("Login", "home")"@*  class="btn btn-primary btn-block" *@>Login</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
