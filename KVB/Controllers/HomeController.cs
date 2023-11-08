@@ -2,8 +2,6 @@
 using KVB.Models.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 using System.Data;
 using System.Diagnostics;
@@ -33,9 +31,9 @@ public class HomeController : Controller
     {
         return View();
     }
-
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     [HttpPost]
-   
+    
     public IActionResult login(login model)
 
     {
@@ -43,21 +41,24 @@ public class HomeController : Controller
         if (ModelState.IsValid)
 
         {
-            if (!string.IsNullOrEmpty({ model.name) && string.IsNullOrEmpty.( model.password)) {
+            if (!string.IsNullOrEmpty(model.name) && !string.IsNullOrEmpty(model.password))
+            {
 
-                    if (IsValidUser(model.name, model.password))
-                    {
-                        HttpContext.Session.SetString("loggedIn","true");
-                        return RedirectToAction("dashboard");
+                if (IsValidUser(model.name, model.password))
+                {
+                    HttpContext.Session.SetString("LoggedIn", "true");
+                    return RedirectToAction("dashboard","home");
 
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid username or password.");
-                        return RedirectToAction("login");
-                    }
                 }
-            } }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid username or password.");
+                    //return RedirectToAction("login");
+                }
+
+            }
+        }
+        
 
         return View();
     }
@@ -91,77 +92,99 @@ public class HomeController : Controller
     {
         return View();
     }
-   
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public IActionResult Dashboard()
     {
-        string query = "SELECT SUM(Enrollment) FROM DataReport WHERE Enrollment > 0";
-        DataTable d = dbhelper.ExecuteQuery(query);
-        string query1 = "SELECT SUM(TotalSuccess) FROM DataReport WHERE TotalSuccess > 0";
-        DataTable d1 = dbhelper.ExecuteQuery(query1);
-        string query2 = "SELECT Count(Verification1) FROM Verification WHERE Verification1 < 70";
-        DataTable d2 = dbhelper.ExecuteQuery(query2);
-        string query3 = "SELECT Sum(EnrollmentFailure) FROM DataReport WHERE EnrollmentFailure > 0";
-        DataTable d3 = dbhelper.ExecuteQuery(query3);
-        string query4 = "SELECT Sum(LoginFailed) FROM DataReport WHERE LoginFailed > 0";
-        DataTable d4 = dbhelper.ExecuteQuery(query4);
-        int enrollmentCount = Convert.ToInt32(d.Rows[0][0]);
-        int verificationCount = Convert.ToInt32(d1.Rows[0][0]);
-        int verificationfailure = Convert.ToInt32(d2.Rows[0][0]);
-        int enrollmentfailure = Convert.ToInt32(d3.Rows[0][0]);
-        int FalseAcceptance = Convert.ToInt32(d4.Rows[0][0]);
-        List<DataPoint> dataPoints = new List<DataPoint>();
-        dataPoints.Add(new DataPoint("Enrollment", enrollmentCount));
-        dataPoints.Add(new DataPoint("Verification", verificationCount));
-        dataPoints.Add(new DataPoint("Verification Failed", verificationfailure));
-        dataPoints.Add(new DataPoint("False Acceptance", FalseAcceptance));
-        ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
-        ViewBag.Echart = enrollmentCount;
-        ViewBag.Vchart = verificationCount;
-        ViewBag.VFchart = verificationfailure;
-        ViewBag.EFchart = enrollmentfailure;
-        ViewBag.FAchart = FalseAcceptance;
+        if (HttpContext.Session.GetString("LoggedIn") == "true")
+        {
+           
+            string query = "SELECT SUM(Enrollment) FROM DataReport WHERE Enrollment > 0";
+            DataTable d = dbhelper.ExecuteQuery(query);
+            string query1 = "SELECT SUM(TotalSuccess) FROM DataReport WHERE TotalSuccess > 0";
+            DataTable d1 = dbhelper.ExecuteQuery(query1);
+            string query2 = "SELECT Count(Verification1) FROM Verification WHERE Verification1 < 70";
+            DataTable d2 = dbhelper.ExecuteQuery(query2);
+            string query3 = "SELECT Sum(EnrollmentFailure) FROM DataReport WHERE EnrollmentFailure > 0";
+            DataTable d3 = dbhelper.ExecuteQuery(query3);
+            string query4 = "SELECT Sum(LoginFailed) FROM DataReport WHERE LoginFailed > 0";
+            DataTable d4 = dbhelper.ExecuteQuery(query4);
+            int enrollmentCount = Convert.ToInt32(d.Rows[0][0]);
+            int verificationCount = Convert.ToInt32(d1.Rows[0][0]);
+            int verificationfailure = Convert.ToInt32(d2.Rows[0][0]);
+            int enrollmentfailure = Convert.ToInt32(d3.Rows[0][0]);
+            int FalseAcceptance = Convert.ToInt32(d4.Rows[0][0]);
+            List<DataPoint> dataPoints = new List<DataPoint>();
+            dataPoints.Add(new DataPoint("Enrollment", enrollmentCount));
+            dataPoints.Add(new DataPoint("Verification", verificationCount));
+            dataPoints.Add(new DataPoint("Verification Failed", verificationfailure));
+            dataPoints.Add(new DataPoint("False Acceptance", FalseAcceptance));
+            ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
+            ViewBag.Echart = enrollmentCount;
+            ViewBag.Vchart = verificationCount;
+            ViewBag.VFchart = verificationfailure;
+            ViewBag.EFchart = enrollmentfailure;
+            ViewBag.FAchart = FalseAcceptance;
+        }
+        else
+        {
+          return RedirectToAction("login");
+        }
         return View();
     }
 
     public IActionResult DataReport()
     {
-        DataTable dataTable = new DataTable();
-        List<DataReport> sflist = new List<DataReport>();
-        string query = " Select * from  [Kvb].[dbo].[DataReport]";
-
-        dataTable = DbHelper.ExecuteQuery(query);
-        foreach (DataRow ds in dataTable.Rows)
+        if (HttpContext.Session.GetString("LoggedIn") == "true")
         {
-            DataReport vr = new DataReport();
-            vr.Date = (string)ds["Date"];
-            vr.Enrollment = (int)ds["Enrollment"];
-            vr.EnrollmentFailure = (int)ds["EnrollmentFailure"];
-            vr.LoginAttempt = (string)ds["LoginAttempt"];
-            vr.LoginSuccessthroughDirectVoiceAuthentication = (string)ds["LoginSuccessthroughDirectVoiceAuthentication"];
-            vr.LoginSuccessThroughAIModel = (string)ds["LoginSuccessThroughAIModel"];
-            vr.TotalSuccess = (int)ds["TotalSuccess"];
-            vr.LoginFailed = (int)ds["LoginFailed"];
-            sflist.Add(vr);
-        }
-        return View(sflist);
+            DataTable dataTable = new DataTable();
+            List<DataReport> Relist = new List<DataReport>();
+            string query = " Select * from  [Kvb].[dbo].[DataReport]";
 
+            dataTable = DbHelper.ExecuteQuery(query);
+            foreach (DataRow ds in dataTable.Rows)
+            {
+                DataReport vr = new DataReport();
+                vr.Date = (string)ds["Date"];
+                vr.Enrollment = (int)ds["Enrollment"];
+                vr.EnrollmentFailure = (int)ds["EnrollmentFailure"];
+                vr.LoginAttempt = (string)ds["LoginAttempt"];
+                vr.LoginSuccessthroughDirectVoiceAuthentication = (string)ds["LoginSuccessthroughDirectVoiceAuthentication"];
+                vr.LoginSuccessThroughAIModel = (string)ds["LoginSuccessThroughAIModel"];
+                vr.TotalSuccess = (int)ds["TotalSuccess"];
+                vr.LoginFailed = (int)ds["LoginFailed"];
+                Relist.Add(vr);
+            }
+          return View(Relist);
+        }
+        else
+        {
+        return RedirectToAction("login");
+        }
     }
     public IActionResult Enrollment()
     {
-        DataTable dataTable = new DataTable();
-        List<Enrollment> sflist = new List<Enrollment>();
-        string query = " Select * from  [Kvb].[dbo].[Enrollment]";
-        dataTable = DbHelper.ExecuteQuery(query);
-        foreach (DataRow ds in dataTable.Rows)
+        if (HttpContext.Session.GetString("LoggedIn") == "true")
         {
-            Enrollment vr = new Enrollment();
-            vr.date = (string)ds["DATE"];
-            vr.customerId = (string)ds["CustomerId"];
-            vr.uniqueId = (string)ds["UniqueId"];
-            vr.EnrollmentId = (string)ds["UniqueId"];
-            sflist.Add(vr);
-        }
+            DataTable dataTable = new DataTable();
+            List<Enrollment> sflist = new List<Enrollment>();
+            string query = " Select * from  [Kvb].[dbo].[Enrollment]";
+            dataTable = DbHelper.ExecuteQuery(query);
+            foreach (DataRow ds in dataTable.Rows)
+            {
+                Enrollment vr = new Enrollment();
+                vr.date = (string)ds["DATE"];
+                vr.customerId = (string)ds["CustomerId"];
+                vr.uniqueId = (string)ds["UniqueId"];
+                vr.EnrollmentId = (string)ds["UniqueId"];
+                sflist.Add(vr);
+            }
             return View(sflist);
+            
+        }
+        else
+        {
+            return RedirectToAction("login");
+        }
     }
     [HttpPost]
     public IActionResult Enrollment(string inputStartDate, string inputEndDate)
@@ -183,30 +206,41 @@ public class HomeController : Controller
             vr.EnrollmentId = (string)ds["UniqueId"];
             sflist.Add(vr);
         }
+       
         return View(sflist);
     }
 
     public IActionResult Verification()
     {
-        DataTable dataTable = new DataTable();
-        List<verification> sflist = new List<verification>();
-        string query = " Select * from  [Kvb].[dbo].[Verification]";
-        dataTable = DbHelper.ExecuteQuery(query);
-        foreach (DataRow ds in dataTable.Rows)
+        if (HttpContext.Session.GetString("LoggedIn") == "true")
         {
-            verification vr = new verification();
-            vr.date = (string)ds["DATE"];
-            vr.customerId = (string)ds["CustomerId"];
-            vr.uniqueId = (string)ds["UniqueId"];
-            vr.Verification1 = (double)ds["Verification1"];
-            vr.captchaId = (string)ds["CaptchaId"];
-            vr.captchaReturn = (string)ds["CaptchaReturn"];
-            vr.digit = (string)ds["Digit"];
-            vr.Verification2 = (string)ds["Verification2"];
-            sflist.Add(vr);
+            DataTable dataTable = new DataTable();
+            List<verification> sflist = new List<verification>();
+            string query = " Select * from  [Kvb].[dbo].[Verification]";
+            dataTable = DbHelper.ExecuteQuery(query);
+
+      
+            foreach (DataRow ds in dataTable.Rows)
+            {
+                verification vr = new verification();
+                vr.date = (string)ds["DATE"];
+                vr.customerId = (string)ds["CustomerId"];
+                vr.uniqueId = (string)ds["UniqueId"];
+                vr.Verification1 = (double)ds["Verification1"];
+                vr.captchaId = (string)ds["CaptchaId"];
+                vr.captchaReturn = (string)ds["CaptchaReturn"];
+                vr.digit = (string)ds["Digit"];
+                vr.Verification2 = (string)ds["Verification2"];
+                sflist.Add(vr);
+            }
+            return View(sflist);
         }
-        return View(sflist);
-}
+        else
+        {
+        return RedirectToAction("login");
+        }
+        
+    }
     [HttpPost]
     public IActionResult Verification(string inputStartDate, string inputEndDate)
     { 
@@ -260,7 +294,11 @@ public class HomeController : Controller
         
         return View(sflist);    
     }
-
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction("login");
+    }
     public IActionResult Privacy()
     {
         return View();

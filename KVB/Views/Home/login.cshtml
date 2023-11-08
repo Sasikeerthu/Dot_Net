@@ -25,13 +25,14 @@
                         <div class="row">
                             @Html.TextBoxFor(model => model.name, new { @class = "form__input", placeholder = "Username" })
                             @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
-                             @*  <input  @Validation.For("credits")/> *@
+                            @* @Validation.For("credits") *@
                         </div>
                         <div class="row">
                         @Html.PasswordFor(model => model.password, new { @class = "form__input", placeholder = "Password" })
                         @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
-                         @Html.ValidationSummary(true,"",new { @class = "text-danger" })
+                      
                         </div>
+                        @Html.ValidationSummary(true,"",new { @class = "text-danger" })
                         <div class="">
                             <input type="submit" value="Submit" class="btn">
                             <a class="btn" href="@Url.Action("Register", "home")">Sign Up</a>
