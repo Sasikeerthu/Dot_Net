@@ -1,0 +1,164 @@
+﻿@model credentials
+@{
+    Layout = "cssprop";
+
+}
+<link href="~/lib/bootstrap/dist/css/index.css" rel="stylesheet" />
+<body>
+   <!-- login-->
+    <div class="container-fluid">
+        <div class="row main-content bg-success text-center w-30">
+            <div class="col-md-4 text-center company__info">
+                <img id="sdf" style="border-radius:25%" src="~/lib/bootstrap/image/kaizen.png" />
+            </div>
+            <div class="col-md-8 col-xs-12 col-sm-12 login_form">
+                <div class="container-fluid">
+                    <div class="row">
+                        <h2>Login</h2>
+                    </div>
+                    <div class="row" >
+                        @using (Html.BeginForm("processform", "HOME", FormMethod.Post))
+                        {
+                            <div class="row">
+                                @Html.TextBoxFor(model => model.name, new { @class = "form__input", placeholder = "Username" })
+                                @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
+                                @* @Validation.For("credits") *@
+                            </div>
+                            <div class="row">
+                                @Html.PasswordFor(model => model.password, new { @class = "form__input", placeholder = "Password" })
+                                @Html.ValidationMessageFor(model => model.password,"", new{ @class = "text-danger" })
+
+                            </div>
+                            @Html.ValidationSummary(true,"",new { @class = "text-danger" })
+                           
+                           @*  <div class="">
+                                <input type="submit" id="Submit" class="btn" value="Submit">
+                               @*  <a class="submit" href="@Url.Action("Register", "home")">Sign Up</a>
+                        </div>  *@
+                       
+                   
+
+                    <div class="register-form" >
+                       
+                    
+                   
+                        <div class="row" >
+                           
+                                @Html.TextBoxFor(cr => cr.name, new { @class = "form__input", placeholder = "Name",@disabled = "disabled"   })
+                            @Html.ValidationMessageFor(cr => cr.name, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="row" >
+                            
+                            @Html.TextBoxFor(cr => cr.emailid, new { @class = "form__input", placeholder = "Email",@disabled = "disabled"  })
+                            @Html.ValidationMessageFor(cr => cr.emailid, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="row" >
+                           
+                            @Html.PasswordFor(cr => cr.password, new { @class = "form__input", placeholder = "Password",@disabled = "disabled"  })
+                            @Html.ValidationMessageFor(cr => cr.password, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="row" >
+                            
+                            @Html.PasswordFor(cr => cr.Confirm_password, new { @class = "form__input", placeholder = "Confirm Password",@disabled = "disabled"  })
+                            @Html.ValidationMessageFor(cr => cr .Confirm_password, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="row" >
+                           
+                            @Html.TextBoxFor(cr => cr.phone, new { @class = "form__input", placeholder = "Phone",@disabled = "disabled"  })
+                            @Html.ValidationMessageFor(cr => cr.phone, "", new { @class = "text-danger" })
+                            @Html.ValidationSummary(true,"",new { @class = "text-danger" })
+                        </div>
+                       
+                   </div>
+                    
+                    }
+                    </div>
+                    <input type="submit" id="Submit" class="btn" value="Submit">
+                    <a href="register.html" class="btn bt1">Register!</a>
+                   @*  <a class="register" href="@Url.Action("Login", "home")" class="btn btn-primary btn-block" >Login</a> *@
+                </div>
+                </div>
+            </div>
+        </div>
+   
+</body> 
+<script>
+    (function ($) {
+
+        // Easing equation based on
+        // EaseInOutExpo by Robert Penner (c) 2001
+        // robertpenner.com/easing_terms_of_use.html
+
+        $.fn.extend(jQuery.easing, {
+            eioe: function (ø, t, b, c, d) {
+                if (t == 0) return b;
+                if (t == d) return b + c;
+                if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+                return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+            }
+        });
+
+        // Toggle disabled
+
+
+        $.fn.toggleDisabled = function () {
+            return this.each(function () {
+                this.disabled = !this.disabled;
+            });
+        };
+
+        // Toggle attribute value
+        // Anders Grimsrud, 2013
+
+        $.fn.toggleAttr = function (a, v1, v2) {
+            return this.each(function () {
+                var $t = $(this),
+                    v = $t.attr(a) === v1 ? v2 : v1;
+                $t.attr(a, v)
+            });
+        };
+
+        // Toggle login/register form
+
+        $('.bt1').click(function () {
+
+            // Toggle register form and enable inputs
+            $('.register-form').slideToggle({
+                easing: 'eioe',
+                duration: 250
+            }).find('input').toggleDisabled();
+
+            // Change header
+            // Login -> Register
+            var $h2 = $('.row h2'),
+                headerText = $h2.text() === "Login"
+                    ? "Register"
+                    : "Login";
+            $h2.text(headerText);
+
+            // Change submit button value
+            // Login -> Register
+            $('#submit').toggleAttr('value', 'Submit', 'Register');
+
+            // Change signup link
+            // Signup -> Login link
+            var $su = $('.bt1');
+            $su.toggleAttr('href', 'register.htm', 'login.htm')
+            var signupLinkText = $su.text() === "Register!"
+               ? "Login!"
+                : "Register!";
+           $su.text(signupLinkText);
+
+            // Hide Forgot password link
+            //$('.forgot-password').toggle();
+
+            // Change form action
+            // login.php -> register.php
+            // $('form').toggleAttr('action', 'login.php', 'register.php')
+
+            return false;
+        });
+
+    })(jQuery);</script>

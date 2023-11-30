@@ -9,7 +9,7 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromSeconds(10);
+            options.IdleTimeout = TimeSpan.FromMinutes(10);
         });
 
         var app = builder.Build();

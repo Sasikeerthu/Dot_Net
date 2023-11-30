@@ -3,8 +3,8 @@
     Layout = "cssprop";
 
 }
-
-
+<title>@ViewData["Title"] - Registration_page</title>
+<link href="~/lib/bootstrap/dist/css/index.css" rel="stylesheet" />
 
 <div class="container " >
     <div class="row  justify-content-center  mt-4  ">
@@ -46,7 +46,7 @@
                             @Html.ValidationMessageFor(cr => cr.phone, "", new { @class = "text-danger" })
                             @Html.ValidationSummary(true,"",new { @class = "text-danger" })
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
                         <a class="btn" href="@Url.Action("Login", "home")"@*  class="btn btn-primary btn-block" *@>Login</a>
                         }
                     </div>

@@ -21,9 +21,10 @@
 }
 
 body {
-    height: 300px;
-    overflow-y: hidden; /* Hide vertical scrollbar */
-    overflow-x: hidden;
+    /* height: 300px;
+    overflow-y: hidden; Hide vertical scrollbar 
+    overflow-x: hidden;*/
+    background-size: cover;
 }
 @media screen and (max-width: 640px) {
     .main-content {
@@ -80,7 +81,7 @@ form {
         border-radius: 4px;
     }
 
-.btn {
+.btn{
     transition: all .5s ease;
     width: 70%;
     border-radius: 30px;
@@ -112,3 +113,34 @@ height:172px;
 width:100%;
 
 }
+
+.register-form {
+    display: none;
+}
+form::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+#submit {
+    float: right;
+    padding: 0;
+    width: 75px;
+    background: #9b2;
+    color: #140;
+    border-color: #471;
+}
+
+    #submit:hover {
+        color: #025;
+        background: #28e;
+        border-color: #16c;
+    }
+
+    #submit ~ a {
+        display: block;
+        float: left;
+        width: 120px;
+        text-decoration: none;
+        color: #666;
+    }
